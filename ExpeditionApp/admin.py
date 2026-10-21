@@ -1,6 +1,23 @@
 from django.contrib import admin
 from .models import Expedition
+from django.utils import timezone
 
+
+##########################################################
+class enRetardFilter(admin.SimpleListFilter):
+    title='en retard'
+    parameter_name='en_retard'
+    def lookups(self):
+        return [('oui','OUI'),('non','NON')]
+    
+    def queryset(self, request, queryset):
+        today= timezone.now().date()
+        if self.value()=='oui':
+            return queryset.filter(statut='publiee',date_souhaitee__lt=timezone.now().date())
+        if self.value() == 'non':
+            return queryset.exclude(statut='publiee',date_souhaitee__lt=timezone.now().date())
+        return queryset
+##########################################################
 
 @admin.register(Expedition)
 class ExpeditionAdmin(admin.ModelAdmin):
@@ -13,7 +30,7 @@ class ExpeditionAdmin(admin.ModelAdmin):
     readonly_fields = ('reference', 'created_at', 'updated_at')
     
     fieldsets=(('Informations generales',{
-            'fields':('reference','date_souhaitee','ville_depart','ville_arrivee')
+            'fields':('entreprise','reference','date_souhaitee','ville_depart','ville_arrivee')
         }),('Expedition info',{
             'fields':('poids_kg',)
         }),('Date',{

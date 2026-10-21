@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator, RegexValidator 
+from django.core.validators import MinValueValidator, RegexValidator ,MinLengthValidator
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
@@ -10,7 +10,7 @@ def validate_email(email):
     if not email.endswith('@gmail.com'):
         raise ValidationError("format de l'email invalide (@gmail.com)")
     matricule_validator=RegexValidator(
-        regex="^\d{7}[/ -]?[A-Za-z][/ -]?[ABDNPEabdnpe][/ -]?[MPCNEmpcne][/ -]?\d{3}$", message="ivalide"
+        regex=r"^\d{7}[/ -]?[A-Za-z][/ -]?[ABDNPEabdnpe][/ -]?[MPCNEmpcne][/ -]?\d{3}$", message="invalide"
     )
 
 
@@ -67,12 +67,12 @@ class User(AbstractUser):
 
 class Entreprise(models.Model):
     raison_sociale=models.CharField(max_length=100)
-    matricule_fiscal=models.CharField(max_length=17,unique=True, validators=[MinValueValidator])
+    matricule_fiscal=models.CharField(max_length=17,unique=True, validators=[MinLengthValidator(1)])
     type_entreprise=models.CharField(max_length=15,choices=
                                      [('chargeur','Chargeur'),
                                      ('transporteur','Transporteur')],
                                      default='chargeur')
-    adresse=models.TextField(validators=[MinValueValidator(20,"une adresse")])
+    adresse=models.TextField(validators=[MinLengthValidator(20,"une adresse")])
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     gerant=models.OneToOneField(User,on_delete=models.CASCADE,related_name="Entreprise")

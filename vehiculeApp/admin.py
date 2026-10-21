@@ -5,7 +5,6 @@ from .models import Vehicule
 
 @admin.register(Vehicule)
 class VehiculeAdmin(admin.ModelAdmin):
-
     list_display = ('immatriculation','type_vehicule','capacite_kg','disponible','entreprise','created_at',)
     list_filter = ('type_vehicule','disponible','entreprise',)
     list_editable = ('disponible',)

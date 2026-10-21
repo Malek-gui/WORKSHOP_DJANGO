@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import MinValueValidator,MaxValueValidator
 from django.core.exceptions import ValidationError
 # Create your models here.
+
+
 class Vehicule(models.Model):
     immatriculation=models.CharField(max_length=10,unique=True)
     type_vehicule=models.CharField(max_length=50, choices=[

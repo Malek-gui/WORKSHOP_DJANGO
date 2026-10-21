@@ -95,7 +95,7 @@ class Offre(models.Model):
                 self._appliquer_cascade_acceptation()
 
     def _appliquer_cascade_acceptation(self):
-        Expedition = apps.get_model('ExpeditionsApp', 'Expedition')
+        Expedition = apps.get_model('ExpeditionApp', 'Expedition')
         Expedition.objects.filter(pk=self.expedition_id).update(
             statut='attribuee'
         )
