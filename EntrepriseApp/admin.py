@@ -12,9 +12,8 @@ class AdminUtilisateur(admin.ModelAdmin):
     list_filter=('email',)
     list_editable=('role',)
     search_fields=('email','telephone')
-    list_per_page=10
     date_hierarchy='created_at'
-
+    list_per_page=10
 
 #admin.site.register(User,AdminUtilisateur) ICI
 
@@ -22,11 +21,20 @@ class AdminUtilisateur(admin.ModelAdmin):
 @admin.register(Entreprise)
 class EntrepriseAdmin(admin.ModelAdmin):
     list_display=('raison_sociale','matricule_fiscal','adresse')
-    #list_filter=('adresse',)
-    #list_editable=('role',)
-    #search_fields=('email','telephone')
+    list_filter=('adresse',)
+    #list_editable=('gerant',)
+    search_fields=('matricule_fiscal','raison_sociale')
     list_per_page=10
     date_hierarchy='created_at'
+    fieldsets=(('Informations generales',{
+            'fields':('raison_sociale','matricule_fiscal')
+        }),('Entreprise info',{
+            'fields':('type_entreprise','adresse','gerant')
+        }),('Date',{
+            'fields':('created_at','updated_at')
+        })
+        )
+    readonly_fields=('created_at','updated_at')
 
 
 #admin.site.register(Entreprise)
