@@ -1,12 +1,23 @@
-
+import csv
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Offre
+from django.http import HttpResponse
 
+@admin.action(description="Exporter la sélection en CSV")
+def exporter_offres_csv(modeladmin, request, queryset):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="offres.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['reference_expedition', 'transporteur', 'prix', 'statut'])
+    for offre in queryset.select_related('expedition', 'transporteur'):
+        writer.writerow([offre.expedition.reference, offre.transporteur.raison_sociale,
+        offre.prix, offre.statut])
+    return response
 
 @admin.register(Offre)
 class OffreAdmin(admin.ModelAdmin):
-
+    actions = [exporter_offres_csv]
     list_display = (
         'id',
         'date_proposition',
