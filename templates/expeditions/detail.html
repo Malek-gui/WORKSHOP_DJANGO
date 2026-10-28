@@ -1,0 +1,25 @@
+ 
+<h1>Détails de l'expédition {{ expedition.reference }}</h1>
+
+<ul>
+    <li>Ville de départ : {{ expedition.ville_depart }}</li>
+    <li>Ville d'arrivée : {{ expedition.ville_arrivee }}</li>
+    <li>Statut : {{ expedition.statut }}</li>
+</ul>
+
+<h2>Offres associées</h2>
+
+<ul>
+    {% for offre in offres %}
+        <li>
+            Transporteur : {{ offre.transporteur }}
+            — Véhicule : {{ offre.vehicule }}
+        </li>
+    {% empty %}
+        <li>Aucune offre associée à cette expédition.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'expeditions:liste' %}">
+    Retour à la liste des expéditions
+</a>
