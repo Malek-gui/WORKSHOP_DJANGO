@@ -21,10 +21,12 @@ class Vehicule(models.Model):
                                  related_name='vehicules')
     def __str__(self):
         return f"{self.type_vehicule} ({self.immatriculation})"
+    
     def clean(self):
         super().clean()
         if self.entreprise_id and self.entreprise.type_entreprise !='transporteur':
             raise ValidationError("un véhicule ne peut être rattraché qu'a une entreprise de type transporteur")
+        
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)

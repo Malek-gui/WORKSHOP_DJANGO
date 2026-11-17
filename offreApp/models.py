@@ -83,6 +83,8 @@ class Offre(models.Model):
                     )
                 })
 
+
+
     def save(self, *args, **kwargs):
         self.full_clean()
         previous_statut = None
@@ -93,6 +95,8 @@ class Offre(models.Model):
             super().save(*args, **kwargs)
             if self.statut == 'acceptee' and previous_statut != 'acceptee':
                 self._appliquer_cascade_acceptation()
+
+
 
     def _appliquer_cascade_acceptation(self):
         Expedition = apps.get_model('ExpeditionApp', 'Expedition')

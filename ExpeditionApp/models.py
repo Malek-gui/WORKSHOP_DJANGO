@@ -1,4 +1,3 @@
-
 from django.db import models
 from EntrepriseApp.models import Entreprise
 from django.utils import timezone
@@ -38,7 +37,7 @@ class Expedition(models.Model):
 
         if (
             self.entreprise_id
-            and self.entreprise.type_entreprise != 'transporteur'
+            and self.entreprise.type_entreprise != 'chargeur'
         ):
             raise ValidationError({
                 'entreprise': (
@@ -47,12 +46,14 @@ class Expedition(models.Model):
                 )
             })
 
+
     def save(self, *args, **kwargs):
         if not self.reference:
             self.reference = self._generate_ref()
 
         self.full_clean()
         return super().save(*args, **kwargs)
+
 
     @classmethod
     def _generate_ref(cls):

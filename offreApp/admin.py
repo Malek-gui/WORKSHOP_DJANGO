@@ -15,6 +15,15 @@ def exporter_offres_csv(modeladmin, request, queryset):
         offre.prix, offre.statut])
     return response
 
+
+"""# Couleur du badge par statut (gris par défaut si un nouveau statut est ajouté et oublié ici).
+STATUT_COLORS = {
+    'proposee': '#fd7e14',
+    'acceptee': '#198754',
+    'refusee': '#dc3545',
+    'retiree': '#6c757d',
+}"""
+
 @admin.register(Offre)
 class OffreAdmin(admin.ModelAdmin):
     actions = [exporter_offres_csv]
@@ -79,3 +88,44 @@ class OffreAdmin(admin.ModelAdmin):
             couleurs.get(obj.statut, '#999999'),
             obj.get_statut_display(),
         )
+
+
+"""    def get_readonly_fields(self, request, obj=None):
+        # Une offre acceptée engage le transporteur : ses conditions ne bougent plus.
+        base = list(self.readonly_fields)
+        if obj and obj.statut == 'acceptee':
+            return base + ['prix', 'delai_jours']
+        return base
+
+    @admin.display(description='Statut', ordering='statut')
+    def statut_badge(self, obj):
+        color = STATUT_COLORS.get(obj.statut, '#6c757d')
+        return format_html(
+            '<span style="background-color:{}; color:#fff; padding:2px 10px; '
+            'border-radius:10px; font-size:12px; font-weight:600;">{}</span>',
+            color, obj.get_statut_display(),
+        )
+
+    @admin.action(description="Exporter les offres sélectionnées en CSV")
+    def exporter_csv(self, request, queryset):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="offres.csv"'
+        # BOM UTF-8 : sans lui, Excel affiche mal les caractères accentués (é, è...).
+        response.write('﻿')
+
+        writer = csv.writer(response)
+        writer.writerow([
+            'Référence expédition', 'Transporteur', 'Véhicule', 'Prix (TND)',
+            'Délai (jours)', 'Statut', 'Date de proposition',
+        ])
+        for offre in queryset.select_related('expedition', 'transporteur', 'vehicule'):
+            writer.writerow([
+                offre.expedition.reference,
+                offre.transporteur.raison_sociale,
+                offre.vehicule.immatriculation,
+                offre.prix,
+                offre.delai_jours,
+                offre.get_statut_display(),
+                offre.date_proposition,
+            ])
+        return response"""

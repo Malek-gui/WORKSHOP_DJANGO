@@ -4,15 +4,16 @@ from django.core.validators import MinValueValidator, RegexValidator ,MinLengthV
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 
+
 def validate_email(email):
     if not email:
         raise ValidationError("veuillez saisir une adresse email")
     if not email.endswith('@gmail.com'):
         raise ValidationError("format de l'email invalide (@gmail.com)")
-    matricule_validator=RegexValidator(
-        regex=r"^\d{7}[/ -]?[A-Za-z][/ -]?[ABDNPEabdnpe][/ -]?[MPCNEmpcne][/ -]?\d{3}$", message="invalide"
-    )
 
+"""    matricule_validator=RegexValidator(
+        regex=r"^\d{7}[/ -]?[A-Za-z][/ -]?[ABDNPEabdnpe][/ -]?[MPCNEmpcne][/ -]?\d{3}$", message="invalide"
+"""
 
 # Create your models here.
 class User(AbstractUser): 
@@ -33,10 +34,6 @@ class User(AbstractUser):
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
 
-
-    def save(self, *args, **kwargs):
-            self.full_clean()
-            super().save(*args, **kwargs)
 
     @classmethod
     def _generate_user_id(cls):
@@ -80,3 +77,7 @@ class Entreprise(models.Model):
 
     def __str__(self):
         return self.raison_sociale
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
