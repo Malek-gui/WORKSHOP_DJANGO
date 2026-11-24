@@ -1,6 +1,19 @@
-<h1>Formulaire Véhicule</h1>
-<form method="post" >
-    {% csrf_token %}
- {{form.as_p}}
- <button type="submit">Enregister</button>
-</form>
+{% extends 'base.html' %}
+
+{% block titre %}Formulaire Véhicule{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h1>Formulaire Véhicule</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-fields">
+            {{ form.as_p }}
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <a href="{% url 'vehicules:liste' %}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

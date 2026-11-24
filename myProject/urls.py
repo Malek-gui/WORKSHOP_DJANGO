@@ -8,5 +8,7 @@ urlpatterns = [
     path('', homePage, name='home'),
     path('home/<str:name>/', homePageName, name='home_name'),
     path('expeditions/', include('ExpeditionApp.urls')),
-    path("vehicules/", include("VehiculeApp.urls"))
+    path("vehicules/", include("VehiculeApp.urls")),
+    path("entreprises/",include("EntrepriseApp.urls")),
+    path("offres/",include("offreApp.urls"))
 ]

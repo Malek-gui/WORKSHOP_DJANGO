@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block titre %}Liste des entreprises{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>Liste des entreprises</h1>
+        <p>Gérez les entreprises chargeurs et transporteurs enregistrées</p>
+    </div>
+    <div>
+        <a href="{% url 'entreprises:create' %}" class="btn btn-primary">+ Ajouter une entreprise</a>
+    </div>
+</div>
+
+<ul class="card-grid">
+    {% for e in entreprises %}
+    <li class="card">
+        <div>
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">{{ e.raison_sociale|default:e.matricule_fiscal }}</h2>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">Matricule : <strong>{{ e.matricule_fiscal }}</strong></span>
+                </div>
+                {% if e.type_entreprise %}
+                <span class="badge {% if e.type_entreprise == 'chargeur' %}badge-primary{% else %}badge-success{% endif %}">
+                    {{ e.get_type_entreprise_display|default:e.type_entreprise|capfirst }}
+                </span>
+                {% endif %}
+            </div>
+            {% if e.adresse %}
+            <div class="card-body">
+                <p style="font-size: 0.875rem; color: var(--text-muted);">{{ e.adresse|truncatechars:80 }}</p>
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-actions">
+            <a href="{% url 'entreprises:update' e.pk %}" class="btn btn-outline-primary btn-sm">Modifier</a>
+            <a href="{% url 'entreprises:delete' e.pk %}" class="btn btn-outline-danger btn-sm">Supprimer</a>
+        </div>
+    </li>
+    {% empty %}
+    <li class="empty-state">
+        <div class="empty-state-icon">🏢</div>
+        <p>Aucune entreprise enregistrée pour le moment.</p>
+        <a href="{% url 'entreprises:create' %}" class="btn btn-primary btn-sm">Créer la première entreprise</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

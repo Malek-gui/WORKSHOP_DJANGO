@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block titre %}Liste des offres{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>Liste des offres</h1>
+        <p>Consultez les offres tarifaires des transporteurs pour les expéditions</p>
+    </div>
+    <div>
+        <a href="{% url 'offres:create' %}" class="btn btn-primary">+ Proposer une offre</a>
+    </div>
+</div>
+
+<ul class="card-grid">
+    {% for o in offres %}
+    <li class="card">
+        <div>
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Offre #{{ o.pk }}</h2>
+                    {% if o.expedition %}
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">
+                        Expédition : <strong>{{ o.expedition.reference }}</strong>
+                    </span>
+                    {% endif %}
+                </div>
+                <span class="badge {% if o.statut == 'acceptee' %}badge-success{% elif o.statut == 'refusee' %}badge-warning{% else %}badge-primary{% endif %}">
+                    {{ o.get_statut_display|default:o.statut|capfirst }}
+                </span>
+            </div>
+            <div class="card-body">
+                <div style="font-size: 1.35rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">
+                    {{ o.prix }} <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">TND</span>
+                </div>
+                {% if o.transporteur %}
+                <p style="font-size: 0.875rem; color: var(--text-main); margin-bottom: 0.25rem;">
+                    🚛 Transporteur : <strong>{{ o.transporteur.raison_sociale }}</strong>
+                </p>
+                {% endif %}
+                {% if o.vehicule %}
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem;">
+                    Véhicule : {{ o.vehicule.immatriculation }}
+                </p>
+                {% endif %}
+                {% if o.delai_jours %}
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Délai : {{ o.delai_jours }} jour{{ o.delai_jours|pluralize }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-actions">
+            <a href="{% url 'offres:update' o.pk %}" class="btn btn-outline-primary btn-sm">Modifier</a>
+            <a href="{% url 'offres:delete' o.pk %}" class="btn btn-outline-danger btn-sm">Supprimer</a>
+        </div>
+    </li>
+    {% empty %}
+    <li class="empty-state">
+        <div class="empty-state-icon">🏷️</div>
+        <p>Aucune offre enregistrée pour le moment.</p>
+        <a href="{% url 'offres:create' %}" class="btn btn-primary btn-sm">Créer la première offre</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

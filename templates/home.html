@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block titre %}Plateforme Logistique & Transport{% endblock %}
+
+{% block content %}
+<!-- Section Hero -->
+<div style="background: linear-gradient(135deg, #1e3a8a, #2563eb, #3b82f6); color: white; border-radius: var(--radius-lg); padding: 3rem 2rem; margin-bottom: 2.5rem; box-shadow: var(--shadow-lg); text-align: center; position: relative; overflow: hidden;">
+    <div style="max-width: 780px; margin: 0 auto; position: relative; z-index: 2;">
+        <span style="display: inline-block; background: rgba(255,255,255,0.18); backdrop-filter: blur(8px); padding: 0.35rem 1rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1.25rem;">
+            🚀 Plateforme Logistique B2B
+        </span>
+        <h1 style="color: white; font-size: 2.35rem; font-weight: 800; line-height: 1.25; margin-bottom: 1rem;">
+            Simplifiez vos expéditions de fret avec TransConnect
+        </h1>
+        <p style="color: #e0e7ff; font-size: 1.05rem; line-height: 1.6; margin-bottom: 2rem;">
+            La solution centralisée qui connecte les entreprises chargeurs avec un réseau fiable de transporteurs professionnels et de véhicules qualifiés.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 0.85rem; flex-wrap: wrap;">
+            <a href="{% url 'expeditions:create' %}" class="btn" style="background-color: white; color: var(--primary); font-weight: 700; padding: 0.75rem 1.4rem; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                + Publier une expédition
+            </a>
+            <a href="{% url 'expeditions:liste' %}" class="btn" style="background-color: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.75rem 1.4rem;">
+                Consulter les expéditions
+            </a>
+            <a href="{% url 'offres:create' %}" class="btn" style="background-color: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 0.75rem 1.4rem;">
+                Proposer une offre
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistiques / KPI Dashboard -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 2.75rem;">
+    <!-- Carte 1 : Entreprises -->
+    <a href="{% url 'entreprises:liste' %}" class="card" style="text-decoration: none; border-left: 4px solid var(--primary);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.04em;">Entreprises</span>
+                <div style="font-size: 1.9rem; font-weight: 800; color: var(--text-main); margin-top: 0.25rem;">{{ total_entreprises }}</div>
+            </div>
+            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
+                🏢
+            </div>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem;">
+            {{ total_chargeurs }} chargeur{{ total_chargeurs|pluralize }} &bull; {{ total_transporteurs }} transporteur{{ total_transporteurs|pluralize }}
+        </div>
+    </a>
+
+    <!-- Carte 2 : Expéditions -->
+    <a href="{% url 'expeditions:liste' %}" class="card" style="text-decoration: none; border-left: 4px solid #0284c7;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.04em;">Expéditions</span>
+                <div style="font-size: 1.9rem; font-weight: 800; color: var(--text-main); margin-top: 0.25rem;">{{ total_expeditions }}</div>
+            </div>
+            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
+                📦
+            </div>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem;">
+            <strong style="color: var(--primary);">{{ expeditions_publiees }}</strong> en attente de proposition
+        </div>
+    </a>
+
+    <!-- Carte 3 : Offres -->
+    <a href="{% url 'offres:liste' %}" class="card" style="text-decoration: none; border-left: 4px solid var(--success);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.04em;">Offres soumises</span>
+                <div style="font-size: 1.9rem; font-weight: 800; color: var(--text-main); margin-top: 0.25rem;">{{ total_offres }}</div>
+            </div>
+            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
+                🏷️
+            </div>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem;">
+            Tarifs et délais négociés
+        </div>
+    </a>
+
+    <!-- Carte 4 : Véhicules -->
+    <a href="{% url 'vehicules:liste' %}" class="card" style="text-decoration: none; border-left: 4px solid #f59e0b;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.04em;">Parc Véhicules</span>
+                <div style="font-size: 1.9rem; font-weight: 800; color: var(--text-main); margin-top: 0.25rem;">{{ total_vehicules }}</div>
+            </div>
+            <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--warning-light); color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.35rem;">
+                🚚
+            </div>
+        </div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem;">
+            <strong style="color: var(--success);">{{ vehicules_dispo }}</strong> véhicule{{ vehicules_dispo|pluralize }} disponible{{ vehicules_dispo|pluralize }}
+        </div>
+    </a>
+</div>
+
+<!-- Section : Dernières Expéditions -->
+<div style="margin-bottom: 3rem;">
+    <div class="page-header" style="margin-bottom: 1.25rem;">
+        <div>
+            <h2>Dernières expéditions publiées</h2>
+            <p>Découvrez les demandes récentes nécessitant un transporteur</p>
+        </div>
+        <a href="{% url 'expeditions:liste' %}" class="btn btn-outline-primary btn-sm">
+            Voir toutes les expéditions &rarr;
+        </a>
+    </div>
+
+    <ul class="card-grid">
+        {% for e in dernieres_expeditions %}
+        <li class="card">
+            <div>
+                <div class="card-header">
+                    <div>
+                        <h3 class="card-title" style="font-size: 1.05rem;">
+                            <a href="{% url 'expeditions:detail' e.reference %}" style="text-decoration: none; color: inherit;">
+                                {{ e.reference }}
+                            </a>
+                        </h3>
+                        {% if e.entreprise %}
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">
+                            {{ e.entreprise.raison_sociale }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <span class="badge {% if e.statut == 'publiee' %}badge-primary{% elif e.statut == 'livree' %}badge-success{% else %}badge-warning{% endif %}">
+                        {{ e.get_statut_display|default:e.statut|capfirst }}
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <div style="display: flex; align-items: center; gap: 0.4rem; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; background: var(--bg-body); padding: 0.45rem 0.65rem; border-radius: var(--radius-sm);">
+                        <span>📍 {{ e.ville_depart }}</span>
+                        <span style="color: var(--primary);">➔</span>
+                        <span>🏁 {{ e.ville_arrivee }}</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                        <span>📅 {{ e.date_souhaitee|date:"d/m/Y"|default:e.date_souhaitee }}</span>
+                        <span>⚖️ {{ e.poids_kg }} kg</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-actions">
+                <a href="{% url 'expeditions:detail' e.reference %}" class="btn btn-primary btn-sm" style="width: 100%;">
+                    Consulter & Faire une offre
+                </a>
+            </div>
+        </li>
+        {% empty %}
+        <li class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <p>Aucune expédition n'est enregistrée pour le moment.</p>
+            <a href="{% url 'expeditions:create' %}" class="btn btn-primary btn-sm">+ Publier la première expédition</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- Section : Processus / Comment ça marche -->
+<div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2.25rem 2rem; box-shadow: var(--shadow-sm);">
+    <div style="text-align: center; max-width: 600px; margin: 0 auto 2rem;">
+        <h2 style="font-size: 1.45rem;">Comment fonctionne TransConnect ?</h2>
+        <p style="font-size: 0.925rem; color: var(--text-muted); margin-top: 0.35rem;">
+            Un flux de travail fluide conçu pour optimiser les coûts et réduire les trajets à vide.
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.75rem;">
+        <div style="text-align: center; padding: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: var(--radius-full); background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; margin: 0 auto 1rem;">
+                1
+            </div>
+            <h3 style="font-size: 1.05rem; margin-bottom: 0.4rem;">1. Déclaration du fret</h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5;">
+                Les entreprises chargeurs définissent le trajet, la date d'acheminement et le poids de la marchandise.
+            </p>
+        </div>
+
+        <div style="text-align: center; padding: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: var(--radius-full); background: var(--success-light); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; margin: 0 auto 1rem;">
+                2
+            </div>
+            <h3 style="font-size: 1.05rem; margin-bottom: 0.4rem;">2. Offres des transporteurs</h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5;">
+                Les transporteurs inscrits soumettent leurs propositions de prix, véhicules disponibles et délais de livraison.
+            </p>
+        </div>
+
+        <div style="text-align: center; padding: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: var(--radius-full); background: var(--warning-light); color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; margin: 0 auto 1rem;">
+                3
+            </div>
+            <h3 style="font-size: 1.05rem; margin-bottom: 0.4rem;">3. Transport & Validation</h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5;">
+                L'offre retenue est validée et le véhicule assigné procède à l'enlèvement et à la livraison de la cargaison.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

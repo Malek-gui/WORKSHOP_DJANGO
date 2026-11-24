@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from .forms import OffreForm
 
 
-"""
+
 # Create your views here.
 class OffreCreateView(CreateView):
     model= Offre
@@ -19,13 +19,16 @@ class OffreUpdateView(UpdateView):
     #fields ='__all__'
     form_class = OffreForm
     success_url = reverse_lazy('offres:liste')
+
+
 class ListOffreView(ListView):
     model= Offre
     template_name="offres/liste.html"
     context_object_name ='offres'
+
+    
 class DeleteOffreView(DeleteView):
     model=Offre
     template_name ="offres/confirm_delete.html"
     context_object_name ='offre'
     success_url = reverse_lazy('offres:liste')
-"""

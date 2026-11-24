@@ -1,15 +1,57 @@
 {% extends 'base.html' %}
-{% block titre %} Liste véhicules {% endblock %}
-{% block content %} 
-<h1> Liste des véhicules </h1>
-<ul>
+
+{% block titre %}Liste véhicules{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>Liste des véhicules</h1>
+        <p>Gérez le parc de véhicules utilitaires et de transport</p>
+    </div>
+    <div>
+        <a href="{% url 'vehicules:create' %}" class="btn btn-primary">+ Ajouter un véhicule</a>
+    </div>
+</div>
+
+<ul class="card-grid">
     {% for e in vehicules %}
-<li><a>{{e.immatriculation}}</a> <br/>
-<a href="{% url 'vehicules:update' e.pk%}">Update</a> <a href="{% url 'vehicules:delete' e.pk%}">Delete</a>
-<hr/>
-</li>
-{% empty %}
-<p>No content</p>
+    <li class="card">
+        <div>
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">🚗 {{ e.immatriculation }}</h2>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">
+                        {{ e.get_type_vehicule_display|default:e.type_vehicule }}
+                    </span>
+                </div>
+                <span class="badge {% if e.disponible %}badge-success{% else %}badge-warning{% endif %}">
+                    {% if e.disponible %}Disponible{% else %}Indisponible{% endif %}
+                </span>
+            </div>
+            <div class="card-body">
+                {% if e.capacite_kg %}
+                <p style="font-size: 0.875rem; color: var(--text-main); margin-bottom: 0.25rem;">
+                    Capacité de charge : <strong>{{ e.capacite_kg }} kg</strong>
+                </p>
+                {% endif %}
+                {% if e.entreprise %}
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Transporteur : {{ e.entreprise.raison_sociale }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-actions">
+            <a href="{% url 'vehicules:update' e.pk %}" class="btn btn-outline-primary btn-sm">Modifier</a>
+            <a href="{% url 'vehicules:delete' e.pk %}" class="btn btn-outline-danger btn-sm">Supprimer</a>
+        </div>
+    </li>
+    {% empty %}
+    <li class="empty-state">
+        <div class="empty-state-icon">🚚</div>
+        <p>Aucun véhicule enregistré dans la flotte pour le moment.</p>
+        <a href="{% url 'vehicules:create' %}" class="btn btn-primary btn-sm">Ajouter un véhicule</a>
+    </li>
     {% endfor %}
 </ul>
- {% endblock %}
+{% endblock %}

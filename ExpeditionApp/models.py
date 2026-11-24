@@ -35,6 +35,16 @@ class Expedition(models.Model):
     def clean(self):
         super().clean()
 
+        if self.poids_kg is not None and self.poids_kg <= 0:
+            raise ValidationError({
+                'poids_kg': "Le poids doit être strictement supérieur à 0 kg."
+            })
+
+        if self.date_souhaitee and self.date_souhaitee < timezone.now().date():
+            raise ValidationError({
+                'date_souhaitee': "La date souhaitée ne peut pas être dans le passé."
+            })
+
         if (
             self.entreprise_id
             and self.entreprise.type_entreprise != 'chargeur'
@@ -68,8 +78,9 @@ class Expedition(models.Model):
         )
 
         compteur = (
-            int(last_elem.reference[-5:]) + 1
-            if last_elem else 1
+            int(last_elem.reference.split('-')[-1]) + 1
+            if last_elem and last_elem.reference.split('-')[-1].isdigit()
+            else 1
         )
 
         if compteur > 99999:

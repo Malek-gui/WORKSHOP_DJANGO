@@ -1,12 +1,87 @@
 {% extends 'base.html' %}
-{% block titre %} Liste expéditions {% endblock %}
+
+{% block titre %}Liste des expéditions{% endblock %}
+
 {% block content %}
-<h1> Liste des expéditions publiées</h1>
-<ul>
-    {% for e in liste %}
-<li><a href="{% url 'expeditions:detail' e.reference %}">{{e.reference}}</a></li>
-{% empty %}
-<p>Aucune expéditions trouvées (publiées)</p>
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>Liste des expéditions</h1>
+        <p>Consultez, filtrez et gérez les demandes de transport de fret</p>
+    </div>
+    <div>
+        <a href="{% url 'expeditions:create' %}" class="btn btn-primary">+ Nouvelle expédition</a>
+    </div>
+</div>
+
+<!-- Filtres par statut -->
+<div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+    <a href="{% url 'expeditions:liste' %}?statut=publiee" 
+       class="btn btn-sm {% if statut_actif == 'publiee' %}btn-primary{% else %}btn-secondary{% endif %}">
+        Publiées ({{ stats.publiee|default:0 }})
+    </a>
+    <a href="{% url 'expeditions:liste' %}?statut=all" 
+       class="btn btn-sm {% if statut_actif == 'all' %}btn-primary{% else %}btn-secondary{% endif %}">
+        Toutes ({{ stats.toutes|default:0 }})
+    </a>
+    <a href="{% url 'expeditions:liste' %}?statut=en_cours" 
+       class="btn btn-sm {% if statut_actif == 'en_cours' %}btn-primary{% else %}btn-secondary{% endif %}">
+        En cours ({{ stats.en_cours|default:0 }})
+    </a>
+    <a href="{% url 'expeditions:liste' %}?statut=livree" 
+       class="btn btn-sm {% if statut_actif == 'livree' %}btn-primary{% else %}btn-secondary{% endif %}">
+        Livrées ({{ stats.livree|default:0 }})
+    </a>
+</div>
+
+<ul class="card-grid">
+    {% for e in expeditions %}
+    <li class="card">
+        <div>
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">
+                        <a href="{% url 'expeditions:detail' e.reference %}" style="text-decoration: none; color: inherit;">
+                            {{ e.reference }}
+                        </a>
+                    </h2>
+                    {% if e.entreprise %}
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">
+                        Chargeur : <strong>{{ e.entreprise.raison_sociale }}</strong>
+                    </span>
+                    {% endif %}
+                </div>
+                <span class="badge {% if e.statut == 'publiee' %}badge-primary{% elif e.statut == 'livree' %}badge-success{% elif e.statut == 'annulee' %}badge-danger{% else %}badge-warning{% endif %}">
+                    {{ e.get_statut_display|default:e.statut|capfirst }}
+                </span>
+            </div>
+
+            <div class="card-body">
+                <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.65rem; background: var(--bg-body); padding: 0.5rem 0.75rem; border-radius: var(--radius-sm);">
+                    <span>📍 {{ e.ville_depart }}</span>
+                    <span style="color: var(--primary);">➔</span>
+                    <span>🏁 {{ e.ville_arrivee }}</span>
+                </div>
+                
+                <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.2rem;">
+                    <div>📅 Date souhaitée : <strong>{{ e.date_souhaitee|date:"d/m/Y"|default:e.date_souhaitee }}</strong></div>
+                    <div>⚖️ Poids estimé : <strong>{{ e.poids_kg }} kg</strong></div>
+                    <div>💬 Offres reçues : <strong>{{ e.offres.count }}</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-actions">
+            <a href="{% url 'expeditions:detail' e.reference %}" class="btn btn-primary btn-sm">Voir détails</a>
+            <a href="{% url 'expeditions:update' e.pk %}" class="btn btn-outline-primary btn-sm">Modifier</a>
+            <a href="{% url 'expeditions:delete' e.pk %}" class="btn btn-outline-danger btn-sm">Supprimer</a>
+        </div>
+    </li>
+    {% empty %}
+    <li class="empty-state">
+        <div class="empty-state-icon">📦</div>
+        <p>Aucune expédition ne correspond à ce filtre.</p>
+        <a href="{% url 'expeditions:create' %}" class="btn btn-primary btn-sm">Créer une nouvelle expédition</a>
+    </li>
     {% endfor %}
 </ul>
 {% endblock %}

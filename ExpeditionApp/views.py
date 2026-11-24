@@ -1,73 +1,58 @@
-from django.shortcuts import render,get_object_or_404
-from .models import Expedition
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from .models import Expedition
 from .forms import ExpeditionForm
-from django.views.generic import ListView,DetailView
-from django.views.generic   import CreateView,ListView,UpdateView,DeleteView
 
-# Create your views here.
-"""
-def liste_expeditions(request):
-    expeditions = (
-    Expedition.objects
-    .filter(statut='publiee')
-    .select_related('entreprise')
-    .order_by('-created_at')
-    )
-    return render(request, 'expeditions/liste.html',
-                   {'liste': expeditions})
-                   """
 
 class ExpeditionListView(ListView):
     model = Expedition
     template_name = "expeditions/liste.html"
     context_object_name = 'expeditions'
-    #    context_object_name="liste" ??????
 
     def get_queryset(self):
-        return (
+        statut = self.request.GET.get('statut', 'publiee')
+        qs = (
             Expedition.objects
-            .filter(statut='publiee')
             .select_related('entreprise')
             .order_by('-created_at')
         )
+        if statut and statut != 'all':
+            qs = qs.filter(statut=statut)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        statut_actif = self.request.GET.get('statut', 'publiee')
+        context['statut_actif'] = statut_actif
+        context['stats'] = {
+            'toutes': Expedition.objects.count(),
+            'publiee': Expedition.objects.filter(statut='publiee').count(),
+            'en_cours': Expedition.objects.filter(statut='en_cours').count(),
+            'livree': Expedition.objects.filter(statut='livree').count(),
+        }
+        return context
+
 
 class ExpeditionCreateView(CreateView):
-    model= Expedition
-    template_name ='expeditions/form.html'
-    #fields ='__all__'
+    model = Expedition
+    template_name = 'expeditions/form.html'
     form_class = ExpeditionForm
     success_url = reverse_lazy('expeditions:liste')
+
 
 class ExpeditionUpdateView(UpdateView):
-    model= Expedition
-    template_name ='expeditions/form.html'
-    #fields ='__all__'
+    model = Expedition
+    template_name = 'expeditions/form.html'
     form_class = ExpeditionForm
     success_url = reverse_lazy('expeditions:liste')
 
+
 class DeleteExpeditionView(DeleteView):
-    model=Expedition
-    template_name ="expeditions/confirm_delete.html"
-    context_object_name ='expedition'
+    model = Expedition
+    template_name = "expeditions/confirm_delete.html"
+    context_object_name = 'expedition'
     success_url = reverse_lazy('expeditions:liste')
-
-
-""""
-
-def detail_expedition(request, reference):
-    expedition = get_object_or_404(Expedition, reference=reference)
-    offres = (
-    expedition.offres
-    .select_related('transporteur', 'vehicule')
-    .order_by('-date_proposition')
-    )
-    return render(
-    request,
-    'expeditions/detail.html',
-    {'expedition': expedition, 'offres': offres},
-    )
-"""
 
 
 class ExpeditionDetailView(DetailView):
@@ -76,10 +61,13 @@ class ExpeditionDetailView(DetailView):
     context_object_name = 'expedition'
     slug_field = 'reference'
     slug_url_kwarg = 'reference'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Utilisation de related_name='offres' au lieu de l'attribut par défaut offre_set
         context['offres'] = (
-            self.object.offre_set
+            self.object.offres
             .select_related('transporteur', 'vehicule')
+            .order_by('-date_proposition')
         )
         return context

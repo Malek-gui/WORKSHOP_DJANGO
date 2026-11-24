@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block titre %}Confirmation de suppression{% endblock %}
+
+{% block content %}
+<div class="confirm-card">
+    <div class="confirm-icon">⚠️</div>
+    <h2>Confirmation</h2>
+    <p>
+        Êtes-vous sûr de vouloir supprimer cette offre ? <br/>
+        {% if offre.pk or Offre.pk %}
+        <span class="highlight">Offre #{{ offre.pk|default:Offre.pk }}</span>
+        {% endif %}
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="confirm-actions">
+            <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+            <a href="{% url 'offres:liste' %}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

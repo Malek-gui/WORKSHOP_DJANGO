@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block titre %}Confirmation de suppression{% endblock %}
+
+{% block content %}
+<div class="confirm-card">
+    <div class="confirm-icon">⚠️</div>
+    <h2>Confirmation</h2>
+    <p>
+        Êtes-vous sûr de vouloir supprimer l'entreprise <br/>
+        <span class="highlight">{{ entreprise.matricule_fiscal|default:Entreprise.matricule_fiscal }}</span> ?
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="confirm-actions">
+            <button type="submit" class="btn btn-danger">Oui, supprimer</button>
+            <a href="{% url 'entreprises:liste' %}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,31 +1,118 @@
-<h1> détails de l'expédition avec référence {{expedition.reference}}</h1>
-<ul>
-    <li>
-        {{expedition.ville_depart}}
-    </li>
-    <li>{{expedition.ville_arrivee}}</li>
-    <li>{{expedition.statut}}</li>
+{% extends 'base.html' %}
 
-</ul>
-<h3>Offres reçues</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Transporteur</th>
-            <th>Véhicule</th>
-            <th>Prix</th>
-        
-        </tr>
-    </thead>
-    <tbody>
-        {% for offre in offres %}
-        <tr>
-            <td><a >{{ offre.transporteur.raison_sociale }}</a></td>
-            <td><a >{{ offre.vehicule.immatriculation }}</a></td>
-            <td><a >{{ offre.prix}} TND</a></td>
-                 </tr>
-        {% empty %}
-        <tr>Aucune offre pour cette expédition</tr>
-        {% endfor %}
-    </tbody>
-</table>
+{% block titre %}Détails Expédition {{ expedition.reference }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>Expédition <span style="color: var(--primary);">{{ expedition.reference }}</span></h1>
+        <p>Consultez la fiche complète du fret et les propositions reçues</p>
+    </div>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <a href="{% url 'expeditions:liste' %}" class="btn btn-secondary">&larr; Retour à la liste</a>
+        <a href="{% url 'offres:create' %}" class="btn btn-primary">+ Déposer une offre</a>
+    </div>
+</div>
+
+<div class="detail-card">
+    <div class="card-header" style="margin-bottom: 1.25rem;">
+        <div>
+            <h2 style="font-size: 1.25rem;">Informations sur l'expédition</h2>
+            {% if expedition.entreprise %}
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.2rem;">
+                Chargeur : <strong>{{ expedition.entreprise.raison_sociale }}</strong> (Matricule : {{ expedition.entreprise.matricule_fiscal }})
+            </p>
+            {% endif %}
+        </div>
+        <span class="badge {% if expedition.statut == 'publiee' %}badge-primary{% elif expedition.statut == 'livree' %}badge-success{% elif expedition.statut == 'annulee' %}badge-danger{% else %}badge-warning{% endif %}">
+            {{ expedition.get_statut_display|default:expedition.statut|capfirst }}
+        </span>
+    </div>
+
+    <ul class="detail-list">
+        <li class="detail-item">
+            <span class="detail-label">Trajet</span>
+            <span class="detail-value">📍 {{ expedition.ville_depart }} &rarr; 🏁 {{ expedition.ville_arrivee }}</span>
+        </li>
+        <li class="detail-item">
+            <span class="detail-label">Date souhaitée</span>
+            <span class="detail-value">📅 {{ expedition.date_souhaitee|date:"d/m/Y"|default:expedition.date_souhaitee }}</span>
+        </li>
+        <li class="detail-item">
+            <span class="detail-label">Poids total</span>
+            <span class="detail-value">⚖️ {{ expedition.poids_kg }} kg</span>
+        </li>
+        <li class="detail-item">
+            <span class="detail-label">Date de publication</span>
+            <span class="detail-value">🕒 {{ expedition.created_at|date:"d/m/Y H:i" }}</span>
+        </li>
+    </ul>
+
+    <div style="display: flex; gap: 0.65rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+        <a href="{% url 'expeditions:update' expedition.pk %}" class="btn btn-outline-primary btn-sm">Modifier l'expédition</a>
+        <a href="{% url 'expeditions:delete' expedition.pk %}" class="btn btn-outline-danger btn-sm">Supprimer l'expédition</a>
+    </div>
+</div>
+
+<div style="margin-top: 2rem;">
+    <div class="page-header" style="margin-bottom: 0.75rem; border-bottom: none; padding-bottom: 0;">
+        <div>
+            <h3>Offres de transport reçues ({{ offres.count }})</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Propositions tarifaires et délais transmis par les transporteurs</p>
+        </div>
+        <a href="{% url 'offres:create' %}" class="btn btn-primary btn-sm">+ Nouvelle offre</a>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Transporteur</th>
+                    <th>Véhicule</th>
+                    <th>Délai proposé</th>
+                    <th>Date proposition</th>
+                    <th>Statut</th>
+                    <th>Prix</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for offre in offres %}
+                <tr>
+                    <td>
+                        <strong>{{ offre.transporteur.raison_sociale }}</strong>
+                    </td>
+                    <td>
+                        {{ offre.vehicule.immatriculation }}
+                        {% if offre.vehicule.type_vehicule %}
+                        <span style="font-size: 0.78rem; color: var(--text-muted); display: block;">
+                            {{ offre.vehicule.get_type_vehicule_display|default:offre.vehicule.type_vehicule }}
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>{{ offre.delai_jours }} jour{{ offre.delai_jours|pluralize }}</td>
+                    <td>{{ offre.date_proposition|date:"d/m/Y" }}</td>
+                    <td>
+                        <span class="badge {% if offre.statut == 'acceptee' %}badge-success{% elif offre.statut == 'refusee' %}badge-danger{% else %}badge-primary{% endif %}">
+                            {{ offre.get_statut_display|default:offre.statut|capfirst }}
+                        </span>
+                    </td>
+                    <td>
+                        <strong style="font-size: 1.05rem; color: var(--primary);">{{ offre.prix }} TND</strong>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem 1rem;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🚚</div>
+                        <p>Aucune offre proposée pour cette expédition pour le moment.</p>
+                        <a href="{% url 'offres:create' %}" class="btn btn-outline-primary btn-sm" style="margin-top: 0.75rem;">
+                            Déposer la première offre
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
