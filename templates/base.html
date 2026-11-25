@@ -701,6 +701,19 @@
                 <h1>TransConnect <span class="brand-tag">3IA4</span></h1>
             </a>
             <nav>
+                {% if user.is_authenticated %}
+                <span>Connecté : {{ user.username }}</span>
+                <form method="post" action="{% url 'logout' %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit">Se déconnecter</button>
+                </form>
+                {% else %}
+                <a href="{% url 'login' %}">Se connecter</a>
+
+                {% endif %}
+
+
+
                 <a href="{% url 'home' %}">Accueil</a>
                 <a href="{% url 'entreprises:liste' %}">Entreprises</a>
                 <a href="{% url 'expeditions:liste' %}">Expéditions</a>

@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.views.generic   import CreateView,ListView,UpdateView,DeleteView
-from .models import Entreprise
+from .models import Entreprise,User
 from django.urls import reverse_lazy
-from .forms import EntrepriseForm
+from .forms import EntrepriseForm, RegistrationUserForm
+from django.contrib.auth import login
 
 
 
@@ -34,3 +35,15 @@ class DeleteEntrepriseView(DeleteView):
     template_name ="entreprises/confirm_delete.html"
     context_object_name ='entreprise'
     success_url = reverse_lazy('entreprises:liste')
+
+
+class RegistrationView(CreateView):
+    model= User
+    form_class = RegistrationUserForm
+    template_name = 'registration/register.html'
+    success_url = reverse_lazy('entreprises:ajouter')
+    
+    def form_valid(self, form):
+        response = super().form_valid(form) # crée l'utilisateur (self.object)
+        login(self.request, self.object) # ouvre directement sa session
+        return response
